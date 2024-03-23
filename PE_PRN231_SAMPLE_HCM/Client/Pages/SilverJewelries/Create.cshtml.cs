@@ -21,6 +21,11 @@ namespace Client.Pages.SilverJewelries
             {
                 return RedirectToPage("/Login");
             }
+            var str = _context.HttpContext.Session.GetString("role");
+            if(str.Equals("2"))
+            {
+                return RedirectToPage("Index");
+            }
             string token = _context.HttpContext.Session.GetString("token");
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await HttpClient.GetAsync("api/v1/category");
@@ -28,7 +33,7 @@ namespace Client.Pages.SilverJewelries
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var temp = JsonConvert.DeserializeObject<List<Category>>(content);
-                ViewData["CategoryId"] = new SelectList(temp, "CategoryId", "CategoryId");
+                ViewData["CategoryId"] = new SelectList(temp, "CategoryId", "CategoryName");
             }
             return Page();
         }
