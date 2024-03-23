@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace PE_PRN231_SAMPLE_HCM.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v1/silverjewelry")]
     [ApiController]
     public class SilverJewelryController : ControllerBase
     {
@@ -95,7 +95,7 @@ namespace PE_PRN231_SAMPLE_HCM.Controllers
         public async Task<IActionResult> Create(SilverJewelryDTO.CreateSilverJewelryDTO request)
         {
             var category = _categoryRepository.GetByStringId(request.CategoryId);
-            if (category != null)
+            if (category == null)
             {
                 return BadRequest("Not found this category id");
             }

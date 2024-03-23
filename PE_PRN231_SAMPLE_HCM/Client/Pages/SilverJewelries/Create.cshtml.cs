@@ -1,45 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BussinessObject.Models;
+using Client.Pages.Inheritance;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using BussinessObject.Models;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace Client.Pages.SilverJewelries
 {
-    public class CreateModel : PageModel
+    public class CreateModel : ClientAbstract
     {
-        private readonly BussinessObject.Models.SilverJewelry2023DbContext _context;
-
-        public CreateModel(BussinessObject.Models.SilverJewelry2023DbContext context)
+        public CreateModel(IHttpClientFactory http, IHttpContextAccessor httpContextAccessor) : base(http, httpContextAccessor)
         {
-            _context = context;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
-        ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
+            if (!CheckAuthen())
+            {
+                return RedirectToPage("/Login");
+            }
+            string token = _context.HttpContext.Session.GetString("token");
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await HttpClient.GetAsync("api/v1/category");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var temp = JsonConvert.DeserializeObject<List<Category>>(content);
+                ViewData["CategoryId"] = new SelectList(temp, "CategoryId", "CategoryId");
+            }
             return Page();
         }
 
         [BindProperty]
         public SilverJewelry SilverJewelry { get; set; } = default!;
-        
+
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.SilverJewelries == null || SilverJewelry == null)
+            string token = _context.HttpContext.Session.GetString("token");
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            string url = "api/v1/silverjewelry";
+            var jsonContent = JsonConvert.SerializeObject(SilverJewelry);
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = await HttpClient.PostAsync(url, httpContent);
+
+            if (response.IsSuccessStatusCode)
             {
+                return RedirectToPage("Index");
+            }
+            else
+            {
+                ViewData["Message"] = "Create Fail: " + await response.Content.ReadAsStringAsync();
+                await OnGet();
                 return Page();
             }
-
-            _context.SilverJewelries.Add(SilverJewelry);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
         }
     }
 }

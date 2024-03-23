@@ -4,6 +4,39 @@
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+<div>
+    <style>
+        form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+            form input,
+            form button {
+                padding: 5px;
+                margin: 5px;
+                font-size: 16px;
+            }
+
+            form button {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+    </style>
+    <form method="get">
+        <label for="nationality">Silver Jewelry Name:</label>
+        <input type="text" name="SilverJewelryName" asp-for="SilverJewelryName" />
+
+        <label for="gender">Metal Weight:</label>
+        <input type="text" name="MetalWeight" asp-for="MetalWeight" />
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -26,7 +59,7 @@
                 @Html.DisplayNameFor(model => model.SilverJewelry[0].CreatedDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SilverJewelry[0].Category)
+                @Html.DisplayNameFor(model => model.SilverJewelry[0].CategoryName)
             </th>
             <th></th>
         </tr>
@@ -53,7 +86,7 @@
                 @Html.DisplayFor(modelItem => item.CreatedDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Category.CategoryId)
+                @Html.DisplayFor(modelItem => item.CategoryName)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.SilverJewelryId">Edit</a> |
@@ -64,3 +97,27 @@
 }
     </tbody>
 </table>
+<div class="pagination">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
+                <a class="page-link" asp-page="./Index" asp-route-pageIndex="1">First</a>
+            </li>
+            <li class="page-item @(Model.PageIndex <= 1 ? "disabled" : "")">
+                <a class="page-link" asp-page="./Index" asp-route-pageIndex="@(Model.PageIndex - 1)">Previous</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                    <a class="page-link" asp-page="./Index" asp-route-pageIndex="@i">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.PageIndex >= Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" asp-page="./Index" asp-route-pageIndex="@(Model.PageIndex + 1)">Next</a>
+            </li>
+            <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" asp-page="./Index" asp-route-pageIndex="@Model.TotalPages">Last</a>
+            </li>
+        </ul>
+    </nav>
+</div>

@@ -1,7 +1,9 @@
 ﻿using BussinessObject.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Repository.IRepo;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 
@@ -31,17 +33,13 @@ namespace Repository.Token
                 return "Not Found SecretKey";
             }
             var key = Encoding.ASCII.GetBytes(secretKey);
-
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim("Id", user.AccountId.ToString()),
-                    new Claim("UserName", user.FullName),
-                    //new Claim("FullName", user.FullName),
-                    new Claim("Email", user.EmailAddress),
-                    new Claim("Issuer", _configuration["JWTSettings:Issuer"]),
-                    new Claim("Audience", _configuration["JWTSettings:Audience"]),
+                    new Claim("Email", user.EmailAddress.Trim().ToLower()),
+                    new Claim("Name", user.FullName.Trim().ToLower()),
                     new Claim(ClaimTypes.Role, user.Role.ToString()),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(10),

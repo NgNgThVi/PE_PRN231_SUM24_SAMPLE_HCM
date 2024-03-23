@@ -38,7 +38,7 @@ namespace Client.Pages
                 var content = await respone.Content.ReadAsStringAsync();
 
                 string[] tokenParts = content.Split('.');
-                string payloadBase64 = tokenParts[1];
+                string payloadBase64 = tokenParts[1].PadRight(tokenParts[1].Length + (4 - tokenParts[1].Length % 4) % 4, '=');
                 // Thực hiện giải mã Base64
                 byte[] payloadBytes = Convert.FromBase64String(payloadBase64);
                // byte[] payloadBytes = Convert.FromBase64String(payloadBase64);

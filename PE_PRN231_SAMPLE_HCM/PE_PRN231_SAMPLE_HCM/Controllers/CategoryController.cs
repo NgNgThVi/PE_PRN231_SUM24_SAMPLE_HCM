@@ -6,7 +6,7 @@ using Repository.IRepo;
 
 namespace PE_PRN231_SAMPLE_HCM.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v1/category")]
     [ApiController]
     [Authorize(Roles = "1")]
     public class CategoryController : ControllerBase
