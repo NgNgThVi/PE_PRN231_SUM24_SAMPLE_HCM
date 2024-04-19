@@ -79,8 +79,6 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
-builder.Services.AddDbContext<SilverJewelry2023DbContext>(option =>
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDaosServices();
 builder.Services.AddRepositorySerivce();
